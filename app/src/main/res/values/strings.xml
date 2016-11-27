@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">YetAnotherRattApp</string>
+    <string-array name="transportation_services">
+        <item>Tramvai</item>
+        <item>Troleibuz</item>
+        <item>Autobuz</item>
+    </string-array>
+
+</resources>
