@@ -25,5 +25,12 @@
         android:layout_below="@+id/spinner_transportation_services"
         android:layout_centerHorizontal="true" />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinner_line_id"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/spinner_sens" />
+
 
 </RelativeLayout>
