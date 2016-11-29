@@ -25,6 +25,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private HashMap<String, String> transportationServiceUrls;
     public HashMap<String, String> liniiIds;
+    public HashMap<String, List<String>> stations;
+
 
     private static final String DEBUG_TAG = "AppCompatActivity";
 
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         transportationServiceUrls = new HashMap<String, String>();
         liniiIds = new HashMap<String, String> ();
+        stations = new HashMap<String, List<String>>();
         transportationServiceUrls.put("Tramvai", "http://86.122.170.105:61978/html/timpi/tram.php");
 
 
@@ -105,8 +108,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             } else {
                 Log.d(DEBUG_TAG, "Network is not connected, doing nothing");
             }
+        }
 
 
+        if ( spinner.getId() == R.id.spinner_sens ) {
+            // An item was selected. You can retrieve the selected item using
+            String choice = (String) parent.getItemAtPosition(pos);
+            Log.d(DEBUG_TAG, "Sens: " + choice);
+
+            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, stations.get(choice));
+
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            // Apply the adapter to the spinner
+            Spinner spinner_statii = (Spinner) findViewById(R.id.spinner_statii);
+
+            spinner_statii.setAdapter(adapter);
+            spinner_statii.setOnItemSelectedListener(MainActivity.this);
 
         }
 
@@ -138,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         protected void onPostExecute(Void result) {
 
-            String title = doc.title();
-
             if (! doc.select("#apDiv5").isEmpty()) {
                 Elements titleJSOUP = doc.select("#apDiv5").select("a");
                 Spinner lineIdSpinner = (Spinner) findViewById(R.id.spinner_line_id);
@@ -164,15 +180,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (! doc.select("table[bgcolor=FFA500]").isEmpty()) {
                 Log.d(DEBUG_TAG, "Parsing Line info");
 
-                Elements sensuri = doc.select("table[bgcolor=FFA500]").select("td").select("b");
-                Log.d(DEBUG_TAG, "Sensuri " + sensuri.toString());
+                Elements stationsAndSensuri = doc.select("table");
+                Log.d(DEBUG_TAG, "stationsAndSensuri " + stationsAndSensuri.toString());
 
 
                 List<String> sensList = new ArrayList<String>();
-                //String[] lineIds = new String[];
-                for (Element sens : sensuri) {
-                    sensList.add(sens.text());
+                String currentSens = new String();
+                for (Element s : stationsAndSensuri) {
+                    if (s.attr("bgcolor").equals("FFA500")) {
+                        Log.d(DEBUG_TAG, "sensList.add(" + s.select("td").select("b").text()+ ");");
+                        sensList.add(s.select("td").select("b").text());
+                        stations.put(s.select("td").select("b").text(), new ArrayList<String>());
+                        currentSens = s.select("td").select("b").text();
+                    }
+                    if (s.attr("bgcolor").equals("00BFFF")) {
+                        stations.get(currentSens).add(s.select("td:eq(1)").select("b").text());
+                        Log.d(DEBUG_TAG, "staionList.add(" + s.select("td:eq(1)").select("b").text()+ ");");
+                    }
                 }
+
+                Elements stations= doc.select("table[bgcolor=00BFFF]").select("td:eq(1)").select("b");
+                //Log.d(DEBUG_TAG, "statii " + stations.toString());
+
+
+
+//                Elements sensuri = doc.select("table[bgcolor=FFA500]").select("td").select("b");
+//                //Log.d(DEBUG_TAG, "Sensuri " + sensuri.toString());
+//
+//
+//                //String[] lineIds = new String[];
+//                for (Element sens : sensuri) {
+//                    sensList.add(sens.text());
+//                }
 
                 ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item, sensList);
 

@@ -5,7 +5,7 @@ This app serves to add a reminder to specific transportation line and station so
 * replace html connection with Jsoup - DONE
 * implement chose Line Id - DONE
 * implement chose Direction - DONE
-* implement chose Station
+* implement chose Station - DONE
 * implement chose Time advance
 * implement add to favourite
 * implement run in background and add timer with check interval
